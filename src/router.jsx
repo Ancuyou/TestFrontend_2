@@ -72,7 +72,6 @@ const Router = () => (
     <Routes>
       {/* --- Tuyến đường có Layout chung (Header & Footer) --- */}
       <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
         <Route path="/booking/:movieId" element={<BookingPage />} />
         <Route path="/tickets" element={<TicketsPage />} />
         <Route path="/invoice/:invoiceId" element={<InvoiceDetail />} />
@@ -125,6 +124,7 @@ const Router = () => (
       </Route>
 
       {/* --- Tuyến đường xử lý Redirect không cần giao diện --- */}
+      <Route path="/" element={<Home />} />
       <Route path="/api/payment/return" element={<VNPayRedirect />} />
       <Route path="/vnpay_return" element={<VNPayRedirect />} />
       <Route path="/api/payment/momo/return" element={<MoMoRedirect />} />

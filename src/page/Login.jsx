@@ -10,7 +10,10 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { loginAction } = useAuth();
+
+  // Lấy thêm hàm logOut từ AuthContext
+  const { loginAction, logOut } = useAuth();
+
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -24,27 +27,28 @@ const Login = () => {
     setLoading(true);
     const result = await authService.login({ username, password });
     setLoading(false);
-    if (result.success) {
-      // Đăng nhập thành công, lưu token và cập nhật context
-      loginAction(result.data);
 
-      // Giải mã token để lấy thông tin vai trò
+    if (result.success) {
+      loginAction(result.data);
       const decodedToken = jwtDecode(result.data.accessToken);
       const roles = decodedToken.scope ? decodedToken.scope.split(" ") : [];
 
-      // Kiểm tra vai trò và chuyển hướng
       if (roles.includes("ROLE_ADMIN")) {
-        navigate("/admin"); // Chuyển đến trang admin
+        navigate("/admin");
       } else {
-        navigate("/"); // Chuyển về trang chủ cho user
+        navigate("/");
       }
-      // --- KẾT THÚC PHẦN CHỈNH SỬA ---
     } else {
+      // KHI ĐĂNG NHẬP THẤT BẠI
+      // 1. Luôn xóa các token cũ có thể còn sót lại
+      logOut();
+      // 2. Hiển thị thông báo lỗi từ backend
       setError(
         result.message || "Tên đăng nhập hoặc mật khẩu không chính xác."
       );
     }
   };
+
   const handleGoogleSuccess = async (credentialResponse) => {
     setLoading(true);
     const result = await authService.loginWithGoogle({
@@ -62,6 +66,8 @@ const Login = () => {
         navigate("/");
       }
     } else {
+      // Đăng nhập Google thất bại cũng xóa token cũ
+      logOut();
       setError(result.message || "Đăng nhập bằng Google thất bại.");
     }
   };

@@ -41,22 +41,13 @@ const ProfilePage = () => {
       if (result.success) {
         const userData = result.data;
 
-        // THÊM LOGIC CHUYỂN ĐỔI NGÀY SINH Ở ĐÂY
-        let formattedNgaySinh = "";
-        if (userData.ngaySinh && Array.isArray(userData.ngaySinh)) {
-          // userData.ngaySinh là [YYYY, MM, DD]
-          const [year, month, day] = userData.ngaySinh;
-          // Thêm '0' vào trước tháng/ngày nếu cần (ví dụ: 1 -> "01")
-          const paddedMonth = String(month).padStart(2, "0");
-          const paddedDay = String(day).padStart(2, "0");
-          formattedNgaySinh = `${year}-${paddedMonth}-${paddedDay}`;
-        }
-
+        // Logic mới, đơn giản hơn rất nhiều
         setProfileData({
           hoTen: userData.hoTen || "",
           email: userData.email || "",
           sdt: userData.sdt || "",
-          ngaySinh: formattedNgaySinh, // Sử dụng ngày đã được định dạng
+          // Gán trực tiếp chuỗi "YYYY-MM-DD" từ API vào state
+          ngaySinh: userData.ngaySinh || "",
         });
       } else {
         setErrorMessage(result.message);

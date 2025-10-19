@@ -124,21 +124,35 @@ const Register = () => {
                 <div className="text-danger mt-2">{modalError}</div>
               )}
             </div>
-            <div className="modal-footer">
+            <div className="modal-footer justify-content-between">
+              {" "}
+              {/* Thêm class để căn chỉnh */}
+              {/* NÚT HỦY BỎ MỚI */}
               <button
-                className="btn btn-secondary"
-                onClick={handleResend}
-                disabled={resendCooldown > 0}
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={onLoginRedirect} // Gọi hàm chuyển hướng về trang login
               >
-                Gửi lại OTP {resendCooldown > 0 ? `(${resendCooldown}s)` : ""}
+                Hủy bỏ
               </button>
-              <button
-                className="btn btn-primary"
-                onClick={handleVerify}
-                disabled={modalLoading}
-              >
-                {modalLoading ? "Đang xác thực..." : "Xác nhận"}
-              </button>
+              <div className="d-flex gap-2">
+                {" "}
+                {/* Nhóm 2 nút cũ lại */}
+                <button
+                  className="btn btn-secondary"
+                  onClick={handleResend}
+                  disabled={resendCooldown > 0}
+                >
+                  Gửi lại OTP {resendCooldown > 0 ? `(${resendCooldown}s)` : ""}
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleVerify}
+                  disabled={modalLoading}
+                >
+                  {modalLoading ? "Đang xác thực..." : "Xác nhận"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
