@@ -1,79 +1,70 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Thêm useNavigate
+import { Link } from "react-router-dom";
 import authService from "../services/authService";
-import "./Login.css";
+import "./Auth.css"; // Import file CSS mới
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Khởi tạo navigate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setMessage("");
     setError("");
-    if (!email) {
-      setError("Vui lòng nhập email của bạn.");
-      return;
-    }
-    setLoading(true);
     const result = await authService.forgotPassword(email);
     setLoading(false);
     if (result.success) {
       setMessage(
-        "Yêu cầu thành công! Vui lòng kiểm tra email. Tự động chuyển về trang đăng nhập sau 3 giây."
+        "Yêu cầu đã được gửi. Vui lòng kiểm tra email để đặt lại mật khẩu."
       );
-      // Tự động chuyển hướng sau 3 giây
-      setTimeout(() => {
-        navigate("/login");
-      }, 3000);
     } else {
-      setError(result.message || "Email không tồn tại trong hệ thống.");
+      setError(result.message || "Đã có lỗi xảy ra.");
     }
   };
 
   return (
-    <div className="login-container d-flex justify-content-center align-items-center">
-      <div className="login-form-container p-4 p-sm-5">
-        <h2 className="text-center mb-4">Quên Mật Khẩu</h2>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2 className="text-center">Quên Mật Khẩu</h2>
+        <p className="text-center text-muted mb-4">
+          Nhập email của bạn và chúng tôi sẽ gửi cho bạn một liên kết để đặt lại
+          mật khẩu.
+        </p>
+
+        {message && <div className="alert alert-success">{message}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
+
         <form onSubmit={handleSubmit}>
-          {error && <div className="alert alert-danger">{error}</div>}
-          {message && <div className="alert alert-success">{message}</div>}
-          <div className="form-group mb-3">
-            <label htmlFor="email">Email</label>
+          <div className="form-group mb-4">
+            <label className="form-label" htmlFor="email">
+              Địa chỉ email
+            </label>
             <input
               type="email"
-              className="form-control"
               id="email"
+              className="form-control"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Nhập email đã đăng ký"
+              required
             />
           </div>
+
           <button
             type="submit"
-            className="btn btn-primary w-100 mb-3"
+            className="btn btn-primary w-100"
             disabled={loading}
           >
-            {loading ? (
-              <>
-                <span
-                  className="spinner-border spinner-border-sm"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
-                <span className="sr-only"> Đang tải...</span>
-              </>
-            ) : (
-              "Gửi yêu cầu"
-            )}
+            {loading ? "Đang gửi..." : "Gửi liên kết"}
           </button>
-          <div className="text-center">
-            <Link to="/login">Quay lại Đăng nhập</Link>
-          </div>
         </form>
+        <div className="text-center mt-4">
+          <Link to="/login" className="auth-link">
+            Quay lại Đăng nhập
+          </Link>
+        </div>
       </div>
     </div>
   );

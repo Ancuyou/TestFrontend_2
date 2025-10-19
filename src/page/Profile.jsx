@@ -10,7 +10,6 @@ const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("info");
   const [showPasswordForm, setShowPasswordForm] = useState(false);
 
-  // State cho thông tin cá nhân
   const [profileData, setProfileData] = useState({
     hoTen: "",
     email: "",
@@ -18,7 +17,6 @@ const ProfilePage = () => {
     ngaySinh: "",
   });
 
-  // State cho đổi mật khẩu
   const [passwordData, setPasswordData] = useState({
     oldPassword: "",
     newPassword: "",
@@ -29,7 +27,6 @@ const ProfilePage = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Load thông tin user khi component mount
   useEffect(() => {
     fetchUserInfo();
   }, []);
@@ -40,13 +37,10 @@ const ProfilePage = () => {
       const result = await profileService.getMyInfo();
       if (result.success) {
         const userData = result.data;
-
-        // Logic mới, đơn giản hơn rất nhiều
         setProfileData({
           hoTen: userData.hoTen || "",
           email: userData.email || "",
           sdt: userData.sdt || "",
-          // Gán trực tiếp chuỗi "YYYY-MM-DD" từ API vào state
           ngaySinh: userData.ngaySinh || "",
         });
       } else {
@@ -62,10 +56,7 @@ const ProfilePage = () => {
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
-    setProfileData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setProfileData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -73,10 +64,7 @@ const ProfilePage = () => {
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
-    setPasswordData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setPasswordData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -84,64 +72,52 @@ const ProfilePage = () => {
 
   const validateProfile = () => {
     const newErrors = {};
-
     if (!profileData.hoTen.trim()) {
       newErrors.hoTen = "Vui lòng nhập họ tên";
     }
-
     if (!profileData.email.trim()) {
       newErrors.email = "Vui lòng nhập email";
     } else if (!/\S+@\S+\.\S+/.test(profileData.email)) {
       newErrors.email = "Email không hợp lệ";
     }
-
     if (!profileData.sdt.trim()) {
       newErrors.sdt = "Vui lòng nhập số điện thoại";
     } else if (!/^[0-9]{10}$/.test(profileData.sdt)) {
       newErrors.sdt = "Số điện thoại không hợp lệ (10 chữ số)";
     }
-
     return newErrors;
   };
 
   const validatePassword = () => {
     const newErrors = {};
-
     if (!passwordData.oldPassword) {
       newErrors.oldPassword = "Vui lòng nhập mật khẩu cũ";
     }
-
     if (!passwordData.newPassword) {
       newErrors.newPassword = "Vui lòng nhập mật khẩu mới";
     } else if (passwordData.newPassword.length < 6) {
       newErrors.newPassword = "Mật khẩu phải có ít nhất 6 ký tự";
     }
-
     if (!passwordData.confirmPassword) {
       newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
     } else if (passwordData.newPassword !== passwordData.confirmPassword) {
       newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
     }
-
     return newErrors;
   };
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     const newErrors = validateProfile();
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-
     setLoading(true);
     setSuccessMessage("");
     setErrorMessage("");
-
     try {
       const result = await profileService.updateMyInfo(profileData);
-
       if (result.success) {
         setSuccessMessage("Cập nhật thông tin thành công!");
         setTimeout(() => setSuccessMessage(""), 3000);
@@ -158,22 +134,18 @@ const ProfilePage = () => {
   const handleChangePassword = async (e) => {
     e.preventDefault();
     const newErrors = validatePassword();
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-
     setLoading(true);
     setSuccessMessage("");
     setErrorMessage("");
-
     try {
       const result = await profileService.changePassword({
         oldPassword: passwordData.oldPassword,
         newPassword: passwordData.newPassword,
       });
-
       if (result.success) {
         setSuccessMessage("Đổi mật khẩu thành công!");
         setPasswordData({
@@ -195,19 +167,17 @@ const ProfilePage = () => {
 
   if (loading && !profileData.email) {
     return (
-      <div className="profile-page">
-        <div className="container">
-          <div
-            className="d-flex justify-content-center align-items-center"
-            style={{ minHeight: "60vh" }}
-          >
-            <div className="text-center">
-              <div
-                className="spinner-border text-primary mb-3"
-                style={{ width: "3rem", height: "3rem" }}
-              ></div>
-              <h5>Đang tải thông tin...</h5>
-            </div>
+      <div
+        className="d-flex flex-column min-vh-100"
+        style={{ background: "#181a20" }}
+      >
+        <div className="flex-grow-1 d-flex justify-content-center align-items-center">
+          <div className="text-center">
+            <div
+              className="spinner-border text-danger mb-3"
+              style={{ width: "3rem", height: "3rem" }}
+            ></div>
+            <h5 className="text-white">Đang tải thông tin...</h5>
           </div>
         </div>
       </div>
@@ -215,17 +185,27 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="profile-page">
-      {/* Page Header */}
-      <div className="bg-primary text-white py-4 mb-4">
+    <div
+      className="d-flex flex-column min-vh-100"
+      style={{ background: "#181a20", overflowX: "hidden" }}
+    >
+      {/* Page Banner */}
+      <div
+        className="profile-banner position-relative"
+        style={{
+          background: "#0d0d12",
+          padding: "60px 0",
+          marginBottom: "40px",
+        }}
+      >
         <div className="container">
           <div className="row align-items-center">
             <div className="col-md-8">
-              <h2 className="mb-0">
-                <i className="bi bi-person-circle me-2"></i>
+              <h2 className="mb-2 fw-bold text-white">
+                <i className="bi bi-person-circle me-3"></i>
                 Quản lý tài khoản cá nhân
               </h2>
-              <p className="mb-0 opacity-75">
+              <p className="mb-0 text-white opacity-75">
                 Xem và chỉnh sửa thông tin tài khoản của bạn
               </p>
             </div>
@@ -233,36 +213,49 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Success Message */}
+      {/* Notifications */}
       {successMessage && (
-        <div className="container mb-3">
+        <div className="container mb-4">
           <div
-            className="alert alert-success alert-dismissible fade show"
-            role="alert"
+            className="alert alert-success d-flex align-items-center"
+            style={{
+              background: "rgba(40, 199, 111, 0.1)",
+              border: "1px solid #28c76f",
+              borderRadius: "8px",
+            }}
           >
-            <i className="bi bi-check-circle me-2"></i>
-            {successMessage}
+            <i
+              className="bi bi-check-circle-fill me-2 text-success"
+              style={{ fontSize: "1.5rem" }}
+            ></i>
+            <div className="flex-grow-1 text-white">{successMessage}</div>
             <button
               type="button"
-              className="btn-close"
+              className="btn-close btn-close-white"
               onClick={() => setSuccessMessage("")}
             ></button>
           </div>
         </div>
       )}
 
-      {/* Error Message */}
       {errorMessage && (
-        <div className="container mb-3">
+        <div className="container mb-4">
           <div
-            className="alert alert-danger alert-dismissible fade show"
-            role="alert"
+            className="alert alert-danger d-flex align-items-center"
+            style={{
+              background: "rgba(234, 84, 85, 0.1)",
+              border: "1px solid #ea5455",
+              borderRadius: "8px",
+            }}
           >
-            <i className="bi bi-exclamation-triangle me-2"></i>
-            {errorMessage}
+            <i
+              className="bi bi-exclamation-triangle-fill me-2 text-danger"
+              style={{ fontSize: "1.5rem" }}
+            ></i>
+            <div className="flex-grow-1 text-white">{errorMessage}</div>
             <button
               type="button"
-              className="btn-close"
+              className="btn-close btn-close-white"
               onClick={() => setErrorMessage("")}
             ></button>
           </div>
@@ -270,365 +263,566 @@ const ProfilePage = () => {
       )}
 
       {/* Main Content */}
-      <div className="container">
-        <div className="row">
-          {/* Sidebar */}
-          <div className="col-lg-3 mb-4">
-            <div className="card border-0 shadow-sm">
-              <div className="card-body p-0">
+      <main className="flex-grow-1 pb-5">
+        <div className="container">
+          <div className="row g-4">
+            {/* Sidebar */}
+            <div className="col-lg-3">
+              {/* User Card */}
+              <div
+                className="card border-0 shadow-lg mb-4"
+                style={{ background: "#1f2029", borderRadius: "12px" }}
+              >
+                <div className="card-body text-center p-4">
+                  <div
+                    className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      background:
+                        "linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%)",
+                      fontSize: "2.5rem",
+                    }}
+                  >
+                    <i className="bi bi-person text-white"></i>
+                  </div>
+                  <h5 className="mb-1 fw-bold text-white">
+                    {user?.username || "User"}
+                  </h5>
+                  <p className="text-muted small mb-0">{profileData.email}</p>
+                </div>
+              </div>
+
+              {/* Navigation Tabs */}
+              <div
+                className="card border-0 shadow-lg"
+                style={{ background: "#1f2029", borderRadius: "12px" }}
+              >
                 <div className="list-group list-group-flush">
                   <button
                     className={`list-group-item list-group-item-action d-flex align-items-center ${
                       activeTab === "info" ? "active" : ""
                     }`}
                     onClick={() => setActiveTab("info")}
+                    style={
+                      activeTab === "info"
+                        ? {
+                            background:
+                              "linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%)",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "0",
+                          }
+                        : {
+                            background: "transparent",
+                            color: "#a0a0a0",
+                            border: "none",
+                          }
+                    }
                   >
-                    <i className="bi bi-person me-2"></i>
-                    Thông tin cá nhân
+                    <i className="bi bi-person-lines-fill me-3"></i>
+                    <span className="fw-semibold">Thông tin cá nhân</span>
                   </button>
                   <button
                     className={`list-group-item list-group-item-action d-flex align-items-center ${
                       activeTab === "security" ? "active" : ""
                     }`}
                     onClick={() => setActiveTab("security")}
+                    style={
+                      activeTab === "security"
+                        ? {
+                            background:
+                              "linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%)",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "0",
+                          }
+                        : {
+                            background: "transparent",
+                            color: "#a0a0a0",
+                            border: "none",
+                          }
+                    }
                   >
-                    <i className="bi bi-shield-lock me-2"></i>
-                    Bảo mật
+                    <i className="bi bi-shield-lock-fill me-3"></i>
+                    <span className="fw-semibold">Bảo mật</span>
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* User Info Card */}
-            <div className="card border-0 shadow-sm mt-3">
-              <div className="card-body text-center">
+            {/* Content Area */}
+            <div className="col-lg-9">
+              {activeTab === "info" && (
                 <div
-                  className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3"
-                  style={{ width: "80px", height: "80px", fontSize: "2rem" }}
+                  className="card border-0 shadow-lg"
+                  style={{ background: "#1f2029", borderRadius: "12px" }}
                 >
-                  <i className="bi bi-person"></i>
-                </div>
-                <h5 className="mb-1">{user?.username || "User"}</h5>
-                <p className="text-muted small mb-0">{profileData.email}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Content Area */}
-          <div className="col-lg-9">
-            {activeTab === "info" && (
-              <div className="card border-0 shadow-sm">
-                <div className="card-header bg-white py-3">
-                  <h5 className="mb-0">
-                    <i className="bi bi-pencil-square me-2"></i>
-                    Thông tin cá nhân
-                  </h5>
-                </div>
-                <div className="card-body">
-                  <form onSubmit={handleUpdateProfile}>
-                    <div className="row">
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">
-                          Họ và tên <span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          className={`form-control ${
-                            errors.hoTen ? "is-invalid" : ""
-                          }`}
-                          name="hoTen"
-                          value={profileData.hoTen}
-                          onChange={handleProfileChange}
-                          placeholder="Nhập họ tên"
-                        />
-                        {errors.hoTen && (
-                          <div className="invalid-feedback">{errors.hoTen}</div>
-                        )}
-                      </div>
-
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">
-                          Email <span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="email"
-                          className={`form-control ${
-                            errors.email ? "is-invalid" : ""
-                          }`}
-                          name="email"
-                          value={profileData.email}
-                          onChange={handleProfileChange}
-                          placeholder="Nhập email"
-                        />
-                        {errors.email && (
-                          <div className="invalid-feedback">{errors.email}</div>
-                        )}
-                      </div>
-
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">
-                          Số điện thoại <span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="tel"
-                          className={`form-control ${
-                            errors.sdt ? "is-invalid" : ""
-                          }`}
-                          name="sdt"
-                          value={profileData.sdt}
-                          onChange={handleProfileChange}
-                          placeholder="Nhập số điện thoại"
-                        />
-                        {errors.sdt && (
-                          <div className="invalid-feedback">{errors.sdt}</div>
-                        )}
-                      </div>
-
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">Ngày sinh</label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          name="ngaySinh"
-                          value={profileData.ngaySinh}
-                          onChange={handleProfileChange}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="d-flex justify-content-end gap-2 mt-4">
-                      <button
-                        type="button"
-                        className="btn btn-outline-secondary"
-                        onClick={() => navigate("/")}
-                      >
-                        <i className="bi bi-x-circle me-1"></i>
-                        Hủy
-                      </button>
-                      <button
-                        type="submit"
-                        className="btn btn-primary"
-                        disabled={loading}
-                      >
-                        {loading ? (
-                          <>
-                            <span className="spinner-border spinner-border-sm me-2"></span>
-                            Đang lưu...
-                          </>
-                        ) : (
-                          <>
-                            <i className="bi bi-check-circle me-1"></i>
-                            Lưu thay đổi
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
-
-            {activeTab === "security" && (
-              <div className="card border-0 shadow-sm">
-                <div className="card-header bg-white py-3">
-                  <h5 className="mb-0">
-                    <i className="bi bi-shield-lock me-2"></i>
-                    Bảo mật tài khoản
-                  </h5>
-                </div>
-                <div className="card-body">
-                  {!showPasswordForm ? (
-                    <div>
-                      <div className="d-flex align-items-start mb-4">
-                        <div className="flex-shrink-0">
-                          <div
-                            className="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center"
-                            style={{ width: "50px", height: "50px" }}
-                          >
-                            <i className="bi bi-key fs-4"></i>
-                          </div>
+                  <div
+                    className="card-header py-4"
+                    style={{
+                      background: "rgba(255, 75, 43, 0.05)",
+                      borderBottom: "1px solid rgba(255, 75, 43, 0.2)",
+                      borderRadius: "12px 12px 0 0",
+                    }}
+                  >
+                    <h5 className="mb-0 fw-bold" style={{ color: "#ff4b2b" }}>
+                      <i className="bi bi-pencil-square me-2"></i>
+                      Thông tin cá nhân
+                    </h5>
+                  </div>
+                  <div className="card-body p-4">
+                    <form onSubmit={handleUpdateProfile}>
+                      <div className="row g-4">
+                        <div className="col-md-6">
+                          <label className="form-label text-white fw-semibold">
+                            Họ và tên{" "}
+                            <span style={{ color: "#ff4b2b" }}>*</span>
+                          </label>
+                          <input
+                            type="text"
+                            className={`form-control ${
+                              errors.hoTen ? "is-invalid" : ""
+                            }`}
+                            name="hoTen"
+                            value={profileData.hoTen}
+                            onChange={handleProfileChange}
+                            placeholder="Nhập họ tên"
+                            style={{
+                              background: "#0d0d12",
+                              border: "1px solid #2d2d35",
+                              color: "white",
+                              padding: "12px",
+                              borderRadius: "8px",
+                            }}
+                          />
+                          {errors.hoTen && (
+                            <div className="invalid-feedback">
+                              {errors.hoTen}
+                            </div>
+                          )}
                         </div>
-                        <div className="flex-grow-1 ms-3">
-                          <h6 className="mb-1">Mật khẩu</h6>
-                          <p className="text-muted mb-2">
-                            Đổi mật khẩu định kỳ để bảo vệ tài khoản của bạn
-                          </p>
-                          <button
-                            className="btn btn-outline-primary btn-sm"
-                            onClick={() => setShowPasswordForm(true)}
-                          >
-                            <i className="bi bi-pencil me-1"></i>
-                            Đổi mật khẩu
-                          </button>
+
+                        <div className="col-md-6">
+                          <label className="form-label text-white fw-semibold">
+                            Email <span style={{ color: "#ff4b2b" }}>*</span>
+                          </label>
+                          <input
+                            type="email"
+                            className={`form-control ${
+                              errors.email ? "is-invalid" : ""
+                            }`}
+                            name="email"
+                            value={profileData.email}
+                            onChange={handleProfileChange}
+                            placeholder="Nhập email"
+                            style={{
+                              background: "#0d0d12",
+                              border: "1px solid #2d2d35",
+                              color: "white",
+                              padding: "12px",
+                              borderRadius: "8px",
+                            }}
+                          />
+                          {errors.email && (
+                            <div className="invalid-feedback">
+                              {errors.email}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="col-md-6">
+                          <label className="form-label text-white fw-semibold">
+                            Số điện thoại{" "}
+                            <span style={{ color: "#ff4b2b" }}>*</span>
+                          </label>
+                          <input
+                            type="tel"
+                            className={`form-control ${
+                              errors.sdt ? "is-invalid" : ""
+                            }`}
+                            name="sdt"
+                            value={profileData.sdt}
+                            onChange={handleProfileChange}
+                            placeholder="Nhập số điện thoại"
+                            style={{
+                              background: "#0d0d12",
+                              border: "1px solid #2d2d35",
+                              color: "white",
+                              padding: "12px",
+                              borderRadius: "8px",
+                            }}
+                          />
+                          {errors.sdt && (
+                            <div className="invalid-feedback">{errors.sdt}</div>
+                          )}
+                        </div>
+
+                        <div className="col-md-6">
+                          <label className="form-label text-white fw-semibold">
+                            Ngày sinh
+                          </label>
+                          <input
+                            type="date"
+                            className="form-control"
+                            name="ngaySinh"
+                            value={profileData.ngaySinh}
+                            onChange={handleProfileChange}
+                            style={{
+                              background: "#0d0d12",
+                              border: "1px solid #2d2d35",
+                              color: "white",
+                              padding: "12px",
+                              borderRadius: "8px",
+                            }}
+                          />
                         </div>
                       </div>
 
-                      <hr />
-
-                      <div className="d-flex align-items-start">
-                        <div className="flex-shrink-0">
-                          <div
-                            className="rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center"
-                            style={{ width: "50px", height: "50px" }}
-                          >
-                            <i className="bi bi-check-circle fs-4"></i>
-                          </div>
-                        </div>
-                        <div className="flex-grow-1 ms-3">
-                          <h6 className="mb-1">Tài khoản đã xác thực</h6>
-                          <p className="text-muted mb-2">
-                            Tài khoản của bạn đã được xác thực và bảo mật
-                          </p>
-                          <span className="badge bg-success">
-                            Đang hoạt động
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <form onSubmit={handleChangePassword}>
-                      <div className="mb-3">
-                        <label className="form-label">
-                          Mật khẩu hiện tại{" "}
-                          <span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="password"
-                          className={`form-control ${
-                            errors.oldPassword ? "is-invalid" : ""
-                          }`}
-                          name="oldPassword"
-                          value={passwordData.oldPassword}
-                          onChange={handlePasswordChange}
-                          placeholder="Nhập mật khẩu hiện tại"
-                        />
-                        {errors.oldPassword && (
-                          <div className="invalid-feedback">
-                            {errors.oldPassword}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label">
-                          Mật khẩu mới <span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="password"
-                          className={`form-control ${
-                            errors.newPassword ? "is-invalid" : ""
-                          }`}
-                          name="newPassword"
-                          value={passwordData.newPassword}
-                          onChange={handlePasswordChange}
-                          placeholder="Nhập mật khẩu mới"
-                        />
-                        {errors.newPassword && (
-                          <div className="invalid-feedback">
-                            {errors.newPassword}
-                          </div>
-                        )}
-                        <small className="text-muted">
-                          Mật khẩu phải có ít nhất 6 ký tự
-                        </small>
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label">
-                          Xác nhận mật khẩu mới{" "}
-                          <span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="password"
-                          className={`form-control ${
-                            errors.confirmPassword ? "is-invalid" : ""
-                          }`}
-                          name="confirmPassword"
-                          value={passwordData.confirmPassword}
-                          onChange={handlePasswordChange}
-                          placeholder="Nhập lại mật khẩu mới"
-                        />
-                        {errors.confirmPassword && (
-                          <div className="invalid-feedback">
-                            {errors.confirmPassword}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="d-flex justify-content-end gap-2 mt-4">
+                      <div className="d-flex justify-content-end gap-3 mt-5">
                         <button
                           type="button"
-                          className="btn btn-outline-secondary"
-                          onClick={() => {
-                            setShowPasswordForm(false);
-                            setPasswordData({
-                              oldPassword: "",
-                              newPassword: "",
-                              confirmPassword: "",
-                            });
-                            setErrors({});
+                          className="btn px-4 py-2"
+                          onClick={() => navigate("/")}
+                          style={{
+                            background: "transparent",
+                            border: "1px solid #2d2d35",
+                            color: "white",
+                            borderRadius: "8px",
                           }}
                         >
-                          <i className="bi bi-x-circle me-1"></i>
+                          <i className="bi bi-x-circle me-2"></i>
                           Hủy
                         </button>
                         <button
                           type="submit"
-                          className="btn btn-primary"
+                          className="btn px-4 py-2"
                           disabled={loading}
+                          style={{
+                            background:
+                              "linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%)",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "8px",
+                            boxShadow: "0 4px 15px rgba(255, 75, 43, 0.4)",
+                          }}
                         >
                           {loading ? (
                             <>
                               <span className="spinner-border spinner-border-sm me-2"></span>
-                              Đang xử lý...
+                              Đang lưu...
                             </>
                           ) : (
                             <>
-                              <i className="bi bi-check-circle me-1"></i>
-                              Đổi mật khẩu
+                              <i className="bi bi-check-circle me-2"></i>
+                              Lưu thay đổi
                             </>
                           )}
                         </button>
                       </div>
                     </form>
-                  )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+
+              {activeTab === "security" && (
+                <div
+                  className="card border-0 shadow-lg"
+                  style={{ background: "#1f2029", borderRadius: "12px" }}
+                >
+                  <div
+                    className="card-header py-4"
+                    style={{
+                      background: "rgba(255, 75, 43, 0.05)",
+                      borderBottom: "1px solid rgba(255, 75, 43, 0.2)",
+                      borderRadius: "12px 12px 0 0",
+                    }}
+                  >
+                    <h5 className="mb-0 fw-bold" style={{ color: "#ff4b2b" }}>
+                      <i className="bi bi-shield-lock me-2"></i>
+                      Bảo mật tài khoản
+                    </h5>
+                  </div>
+                  <div className="card-body p-4">
+                    {!showPasswordForm ? (
+                      <div>
+                        <div
+                          className="d-flex align-items-start p-4 mb-4"
+                          style={{
+                            background: "#0d0d12",
+                            borderRadius: "12px",
+                            border: "1px solid #2d2d35",
+                          }}
+                        >
+                          <div className="flex-shrink-0">
+                            <div
+                              className="rounded-circle d-flex align-items-center justify-content-center"
+                              style={{
+                                width: "60px",
+                                height: "60px",
+                                background: "rgba(255, 75, 43, 0.1)",
+                                color: "#ff4b2b",
+                              }}
+                            >
+                              <i
+                                className="bi bi-key-fill"
+                                style={{ fontSize: "1.5rem" }}
+                              ></i>
+                            </div>
+                          </div>
+                          <div className="flex-grow-1 ms-4">
+                            <h6 className="mb-2 text-white fw-bold">
+                              Mật khẩu
+                            </h6>
+                            <p className="text-white mb-3">
+                              Đổi mật khẩu định kỳ để bảo vệ tài khoản của bạn
+                            </p>
+                            <button
+                              className="btn btn-sm px-4"
+                              onClick={() => setShowPasswordForm(true)}
+                              style={{
+                                background:
+                                  "linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%)",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              <i className="bi bi-pencil me-2"></i>
+                              Đổi mật khẩu
+                            </button>
+                          </div>
+                        </div>
+
+                        <div
+                          className="d-flex align-items-start p-4"
+                          style={{
+                            background: "#0d0d12",
+                            borderRadius: "12px",
+                            border: "1px solid #2d2d35",
+                          }}
+                        >
+                          <div className="flex-shrink-0">
+                            <div
+                              className="rounded-circle d-flex align-items-center justify-content-center"
+                              style={{
+                                width: "60px",
+                                height: "60px",
+                                background: "rgba(40, 199, 111, 0.1)",
+                                color: "#28c76f",
+                              }}
+                            >
+                              <i
+                                className="bi bi-shield-check"
+                                style={{ fontSize: "1.5rem" }}
+                              ></i>
+                            </div>
+                          </div>
+                          <div className="flex-grow-1 ms-4">
+                            <h6 className="mb-2 text-white fw-bold">
+                              Tài khoản đã xác thực
+                            </h6>
+                            <p className="text-white mb-3">
+                              Tài khoản của bạn đã được xác thực và bảo mật
+                            </p>
+                            <span
+                              className="badge px-3 py-2"
+                              style={{
+                                background: "rgba(40, 199, 111, 0.2)",
+                                color: "#28c76f",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              <i className="bi bi-check-circle me-2"></i>
+                              Đang hoạt động
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleChangePassword}>
+                        <div className="mb-4">
+                          <label className="form-label text-white fw-semibold">
+                            Mật khẩu hiện tại{" "}
+                            <span style={{ color: "#ff4b2b" }}>*</span>
+                          </label>
+                          <input
+                            type="password"
+                            className={`form-control ${
+                              errors.oldPassword ? "is-invalid" : ""
+                            }`}
+                            name="oldPassword"
+                            value={passwordData.oldPassword}
+                            onChange={handlePasswordChange}
+                            placeholder="Nhập mật khẩu hiện tại"
+                            style={{
+                              background: "#0d0d12",
+                              border: "1px solid #2d2d35",
+                              color: "white",
+                              padding: "12px",
+                              borderRadius: "8px",
+                            }}
+                          />
+                          {errors.oldPassword && (
+                            <div className="invalid-feedback">
+                              {errors.oldPassword}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="mb-4">
+                          <label className="form-label text-white fw-semibold">
+                            Mật khẩu mới{" "}
+                            <span style={{ color: "#ff4b2b" }}>*</span>
+                          </label>
+                          <input
+                            type="password"
+                            className={`form-control ${
+                              errors.newPassword ? "is-invalid" : ""
+                            }`}
+                            name="newPassword"
+                            value={passwordData.newPassword}
+                            onChange={handlePasswordChange}
+                            placeholder="Nhập mật khẩu mới"
+                            style={{
+                              background: "#0d0d12",
+                              border: "1px solid #2d2d35",
+                              color: "white",
+                              padding: "12px",
+                              borderRadius: "8px",
+                            }}
+                          />
+                          {errors.newPassword && (
+                            <div className="invalid-feedback">
+                              {errors.newPassword}
+                            </div>
+                          )}
+                          <small className="text-muted d-block mt-2">
+                            Mật khẩu phải có ít nhất 6 ký tự
+                          </small>
+                        </div>
+
+                        <div className="mb-4">
+                          <label className="form-label text-white fw-semibold">
+                            Xác nhận mật khẩu mới{" "}
+                            <span style={{ color: "#ff4b2b" }}>*</span>
+                          </label>
+                          <input
+                            type="password"
+                            className={`form-control ${
+                              errors.confirmPassword ? "is-invalid" : ""
+                            }`}
+                            name="confirmPassword"
+                            value={passwordData.confirmPassword}
+                            onChange={handlePasswordChange}
+                            placeholder="Nhập lại mật khẩu mới"
+                            style={{
+                              background: "#0d0d12",
+                              border: "1px solid #2d2d35",
+                              color: "white",
+                              padding: "12px",
+                              borderRadius: "8px",
+                            }}
+                          />
+                          {errors.confirmPassword && (
+                            <div className="invalid-feedback">
+                              {errors.confirmPassword}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="d-flex justify-content-end gap-3 mt-5">
+                          <button
+                            type="button"
+                            className="btn px-4 py-2"
+                            onClick={() => {
+                              setShowPasswordForm(false);
+                              setPasswordData({
+                                oldPassword: "",
+                                newPassword: "",
+                                confirmPassword: "",
+                              });
+                              setErrors({});
+                            }}
+                            style={{
+                              background: "transparent",
+                              border: "1px solid #2d2d35",
+                              color: "white",
+                              borderRadius: "8px",
+                            }}
+                          >
+                            <i className="bi bi-x-circle me-2"></i>
+                            Hủy
+                          </button>
+                          <button
+                            type="submit"
+                            className="btn px-4 py-2"
+                            disabled={loading}
+                            style={{
+                              background:
+                                "linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%)",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "8px",
+                              boxShadow: "0 4px 15px rgba(255, 75, 43, 0.4)",
+                            }}
+                          >
+                            {loading ? (
+                              <>
+                                <span className="spinner-border spinner-border-sm me-2"></span>
+                                Đang xử lý...
+                              </>
+                            ) : (
+                              <>
+                                <i className="bi bi-check-circle me-2"></i>
+                                Đổi mật khẩu
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </main>
 
       <style jsx>{`
-        .profile-page {
-          min-height: calc(100vh - 120px);
-          background-color: #f8f9fa;
-          padding-bottom: 3rem;
+        .form-control:focus {
+          background: #0d0d12 !important;
+          border-color: #ff4b2b !important;
+          box-shadow: 0 0 0 0.2rem rgba(255, 75, 43, 0.25) !important;
+          color: white !important;
         }
 
-        .list-group-item.active {
-          background-color: #0d6efd;
-          border-color: #0d6efd;
+        .form-control::placeholder {
+          color: #6c757d;
+        }
+
+        .btn:hover {
+          transform: translateY(-2px);
+          transition: all 0.3s ease;
+        }
+
+        .list-group-item {
+          transition: all 0.3s ease;
         }
 
         .list-group-item:hover:not(.active) {
-          background-color: #f8f9fa;
+          background: rgba(255, 75, 43, 0.1) !important;
+          color: white !important;
         }
 
         .card {
-          transition: transform 0.2s, box-shadow 0.2s;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-        }
-
-        @media (max-width: 768px) {
-          .col-md-6.text-end {
-            text-align: left !important;
-            margin-top: 1rem;
-          }
+          transform: translateY(-5px);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
         }
       `}</style>
     </div>

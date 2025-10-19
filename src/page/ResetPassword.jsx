@@ -1,109 +1,94 @@
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import authService from "../services/authService";
+import "./Auth.css"; // Import file CSS mới
 
 const ResetPassword = () => {
+  const [searchParams] = useSearchParams();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const navigate = useNavigate();
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const token = searchParams.get("token");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
-
-    if (!token) {
-      setError("Token không hợp lệ hoặc đã hết hạn.");
-      return;
-    }
     if (password !== confirmPassword) {
-      setError("Mật khẩu nhập lại không khớp.");
+      setError("Mật khẩu xác nhận không khớp.");
       return;
     }
+    if (password.length < 6) {
+      setError("Mật khẩu phải có ít nhất 6 ký tự.");
+      return;
+    }
+
     setLoading(true);
+    setError("");
+    setMessage("");
     const result = await authService.resetPassword({
-      token: token,
+      token,
       newPassword: password,
     });
     setLoading(false);
 
     if (result.success) {
-      setSuccess(
-        "Đặt lại mật khẩu thành công! Tự động chuyển về trang đăng nhập..."
+      setMessage(
+        "Mật khẩu đã được đặt lại thành công! Đang chuyển hướng đến trang đăng nhập..."
       );
       setTimeout(() => {
         navigate("/login");
       }, 3000);
     } else {
-      setError(result.message || "Lỗi không xác định.");
+      setError(result.message || "Token không hợp lệ hoặc đã hết hạn.");
     }
   };
 
   return (
-    <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <div className="card shadow-sm">
-            <div className="card-body p-4">
-              <h3 className="card-title text-center mb-4">Đặt Lại Mật Khẩu</h3>
-              <form onSubmit={handleSubmit}>
-                {error && <div className="alert alert-danger">{error}</div>}
-                {success && (
-                  <div className="alert alert-success">{success}</div>
-                )}
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2 className="text-center">Đặt Lại Mật Khẩu</h2>
+        {message && <div className="alert alert-success">{message}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-                {!success && (
-                  <>
-                    <div className="form-group mb-3">
-                      <label>Mật Khẩu Mới</label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="form-group mb-3">
-                      <label>Nhập Lại Mật Khẩu Mới</label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      className="btn btn-primary w-100"
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <>
-                          <span
-                            className="spinner-border spinner-border-sm"
-                            role="status"
-                            aria-hidden="true"
-                          ></span>
-                          <span className="sr-only"> Đang tải...</span>
-                        </>
-                      ) : (
-                        "Xác nhận"
-                      )}
-                    </button>
-                  </>
-                )}
-              </form>
+        {!message && (
+          <form onSubmit={handleSubmit}>
+            <div className="form-group mb-3">
+              <label className="form-label" htmlFor="password">
+                Mật khẩu mới
+              </label>
+              <input
+                type="password"
+                id="password"
+                className="form-control"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </div>
-          </div>
-        </div>
+            <div className="form-group mb-4">
+              <label className="form-label" htmlFor="confirmPassword">
+                Xác nhận mật khẩu mới
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                className="form-control"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="btn btn-primary w-100"
+              disabled={loading}
+            >
+              {loading ? "Đang lưu..." : "Lưu mật khẩu"}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

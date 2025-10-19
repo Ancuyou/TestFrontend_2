@@ -162,77 +162,88 @@ const Register = () => {
 
   return (
     <>
-      <div className="login-container d-flex justify-content-center align-items-center">
-        <div className="login-form-container p-4 p-sm-5">
-          <h2 className="text-center mb-4">Đăng Ký</h2>
-          <form onSubmit={handleSubmit}>
+      <div className="auth-container">
+        <div className="auth-card">
+          <h2 className="text-center">Đăng Ký</h2>
+          <form onSubmit={handleSubmit} noValidate>
             {error && <div className="alert alert-danger">{error}</div>}
 
-            {/* Bổ sung các input còn thiếu */}
-            <div className="form-group mb-3">
-              <label>Tên đăng nhập</label>
-              <input
-                type="text"
-                name="tenDangNhap"
-                className="form-control"
-                onChange={handleChange}
-              />
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Tên đăng nhập</label>
+                <input
+                  type="text"
+                  name="tenDangNhap"
+                  className="form-control"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Họ và tên</label>
+                <input
+                  type="text"
+                  name="hoTen"
+                  className="form-control"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             </div>
-            <div className="form-group mb-3">
-              <label>Họ và tên</label>
-              <input
-                type="text"
-                name="hoTen"
-                className="form-control"
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group mb-3">
-              <label>Email</label>
+
+            <div className="mb-3">
+              <label className="form-label">Email</label>
               <input
                 type="email"
                 name="email"
                 className="form-control"
                 onChange={handleChange}
+                required
               />
             </div>
-            <div className="form-group mb-3">
-              <label>Số điện thoại</label>
-              <input
-                type="text"
-                name="sdt"
-                className="form-control"
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group mb-3">
-              <label>Ngày sinh</label>
-              <input
-                type="date"
-                name="ngaySinh"
-                className="form-control"
-                onChange={handleChange}
-              />
-            </div>
-            {/* Kết thúc bổ sung */}
 
-            <div className="form-group mb-3">
-              <label>Mật khẩu</label>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Số điện thoại</label>
+                <input
+                  type="text"
+                  name="sdt"
+                  className="form-control"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Ngày sinh</label>
+                <input
+                  type="date"
+                  name="ngaySinh"
+                  className="form-control"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Mật khẩu</label>
               <input
                 type="password"
                 name="matKhau"
                 className="form-control"
                 onChange={handleChange}
+                required
               />
             </div>
-            <div className="form-group mb-3">
-              <label>Xác nhận mật khẩu</label>
+            <div className="mb-4">
+              <label className="form-label">Xác nhận mật khẩu</label>
               <input
                 type="password"
                 name="confirmPassword"
                 className={`form-control ${passwordError ? "is-invalid" : ""}`}
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
+                required
               />
               {passwordError && (
                 <div className="invalid-feedback">{passwordError}</div>
@@ -247,7 +258,10 @@ const Register = () => {
               {loading ? "Đang xử lý..." : "Đăng Ký"}
             </button>
             <div className="text-center mt-3">
-              Đã có tài khoản? <Link to="/login">Đăng nhập ngay</Link>
+              <span className="text-muted">Đã có tài khoản? </span>
+              <Link to="/login" className="auth-link">
+                Đăng nhập ngay
+              </Link>
             </div>
           </form>
         </div>

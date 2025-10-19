@@ -1,0 +1,96 @@
+/* src/page/Auth.css */
+
+.auth-container {
+  min-height: calc(100vh - 120px); /* Chiều cao trừ đi Header/Footer */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)),
+    url("https://images.unsplash.com/photo-1574267432553-f3e2780e03ca?q=80&w=1920&auto=format&fit=crop");
+  background-size: cover;
+  background-position: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 450px;
+  background-color: rgba(10, 10, 10, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 2rem 2.5rem;
+  backdrop-filter: blur(10px);
+  color: #f8f9fa;
+}
+
+.auth-card h2 {
+  color: white;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.auth-card .form-label {
+  color: #adb5bd;
+}
+
+.auth-card .form-control {
+  background-color: #212529;
+  border: 1px solid #495057;
+  color: #f8f9fa;
+  padding: 0.75rem 1rem;
+}
+
+.auth-card .form-control:focus {
+  background-color: #212529;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  color: #f8f9fa;
+}
+
+.auth-card .form-control::placeholder {
+  color: #6c757d;
+}
+
+.auth-card .btn-primary {
+  padding: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.auth-card .auth-link {
+  color: #0d6efd;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.auth-card .auth-link:hover {
+  color: #4ea8ff;
+  text-decoration: underline;
+}
+
+.auth-card .text-muted {
+  color: #6c757d !important;
+}
+
+.auth-card .or-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #6c757d;
+  margin: 1.5rem 0;
+}
+
+.or-divider::before,
+.or-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #495057;
+}
+
+.or-divider:not(:empty)::before {
+  margin-right: 0.25em;
+}
+
+.or-divider:not(:empty)::after {
+  margin-left: 0.25em;
+}
